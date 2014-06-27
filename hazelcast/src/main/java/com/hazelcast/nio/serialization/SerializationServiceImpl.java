@@ -39,7 +39,7 @@ import com.hazelcast.nio.serialization.ConstantSerializers.LongArraySerializer;
 import com.hazelcast.nio.serialization.ConstantSerializers.LongSerializer;
 import com.hazelcast.nio.serialization.ConstantSerializers.ShortArraySerializer;
 import com.hazelcast.nio.serialization.ConstantSerializers.ShortSerializer;
-import com.hazelcast.nio.serialization.ConstantSerializers.StringSerializer;
+import com.hazelcast.nio.serialization.ConstantSerializers.StringSerializer16;
 import com.hazelcast.nio.serialization.ConstantSerializers.TheByteArraySerializer;
 import com.hazelcast.nio.serialization.DefaultSerializers.BigDecimalSerializer;
 import com.hazelcast.nio.serialization.DefaultSerializers.BigIntegerSerializer;
@@ -142,7 +142,8 @@ public final class SerializationServiceImpl implements SerializationService {
         registerConstant(long[].class, new LongArraySerializer());
         registerConstant(float[].class, new FloatArraySerializer());
         registerConstant(double[].class, new DoubleArraySerializer());
-        registerConstant(String.class, new StringSerializer());
+        // TODO implement this a bit more generic
+        registerConstant(String.class, new StringSerializer16());
 
         safeRegister(Date.class, new DateSerializer());
         safeRegister(BigInteger.class, new BigIntegerSerializer());

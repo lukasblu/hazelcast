@@ -176,6 +176,48 @@ public final class ConstantSerializers {
         }
     }
 
+    public static final class StringSerializer16 extends SingletonSerializer<String> {
+
+        public int getTypeId() {
+            return CONSTANT_TYPE_STRING;
+        }
+
+        public String read(final ObjectDataInput in) throws IOException {
+            int length = in.readInt();
+            byte[] array = new byte[length];
+            in.readFully(array);
+            return toString16(length, array);
+        }
+
+        public void write(final ObjectDataOutput out, final String obj) throws IOException {
+            byte[] array = fromString16(obj);
+            out.writeInt(array.length);
+            out.write(array);
+        }
+
+        public static final String toString16(int length, byte[] array) {
+            char[] chars = new char[length / 2];
+            for (int i = 0; i < length; i += 2) {
+                int chr1 = (array[i] & 0xff) << 8;
+                int chr2 = array[i + 1] & 0xff;
+                chars[i / 2] = (char) (chr1 + chr2);
+            }
+            String result = new String(chars);
+            return result;
+        }
+
+        public static final byte[] fromString16(String obj) {
+            int length = obj.length();
+            byte[] array = new byte[2 * length];
+            for (int i = 0; i < length; i++) {
+                char chr = obj.charAt(i);
+                array[i * 2] = (byte) ((chr & 0xff00) >> 8);
+                array[i * 2 + 1] = (byte) (chr & 0xff);
+            }
+            return array;
+        }
+    }
+
     public static final class TheByteArraySerializer implements ByteArraySerializer<byte[]> {
 
         public int getTypeId() {
