@@ -207,10 +207,11 @@ public final class ConstantSerializers {
         }
 
         public static final byte[] fromString16(String obj) {
+            char[] chars = obj.toCharArray();
             int length = obj.length();
             byte[] array = new byte[2 * length];
             for (int i = 0; i < length; i++) {
-                char chr = obj.charAt(i);
+                char chr = chars[i];
                 array[i * 2] = (byte) ((chr & 0xff00) >> 8);
                 array[i * 2 + 1] = (byte) (chr & 0xff);
             }
