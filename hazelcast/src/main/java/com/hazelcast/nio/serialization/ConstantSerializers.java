@@ -20,6 +20,7 @@ import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.hazelcast.nio.serialization.SerializationConstants.CONSTANT_TYPE_CHAR;
 import static com.hazelcast.nio.serialization.SerializationConstants.CONSTANT_TYPE_SHORT;
@@ -176,6 +177,34 @@ public final class ConstantSerializers {
         }
     }
 
+    public static final class StringSerializerCaching extends SingletonSerializer<String> {
+
+        private final ConcurrentHashMap<String, byte[]> cache = new ConcurrentHashMap<String, byte[]>();
+
+        public int getTypeId() {
+            return CONSTANT_TYPE_STRING;
+        }
+
+        public String read(final ObjectDataInput in) throws IOException {
+            int length = in.readInt();
+            byte[] array = new byte[length];
+            in.readFully(array);
+            String result = new String(array, "UTF-8");
+            return result;
+        }
+
+        public void write(final ObjectDataOutput out, final String obj) throws IOException {
+            byte[] array = cache.get(obj);
+            if (array == null) {
+                array = obj.getBytes("UTF-8");
+                cache.put(obj, array);
+            }
+            out.writeInt(array.length);
+            out.write(array);
+        }
+
+    }
+    
     public static final class StringSerializer16 extends SingletonSerializer<String> {
 
         public int getTypeId() {
